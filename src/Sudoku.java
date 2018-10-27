@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 //(i: Row(UP), j: Col(DOWN))
@@ -15,9 +16,28 @@ public class Sudoku
         emptyCells= new ArrayList<String>();
     }
 
-    public int checkPlace()
+    public ArrayList<Integer> checkPlace()
     {
-        return 0;
+        String emptyBox = pickEmptyCells();
+        System.out.println("Empty Cells: " + emptyBox);
+        int row = Character.getNumericValue(emptyBox.charAt(0));
+        int col = Character.getNumericValue(emptyBox.charAt(1));
+        ArrayList<Integer> options = new ArrayList<Integer>();
+        for(int i=1; i <= 9; i++)
+            options.add(i);
+
+        for(int i=0; i < 9 ; i++)
+        {
+            if(table[i][col]!=0)
+                if(options.contains(table[i][col]))
+                    options.remove(options.indexOf(table[i][col]));
+
+            if(table[row][i]!=0)
+                if(options.contains(table[row][i]))
+                    options.remove(options.indexOf(table[row][i]));
+        }
+
+        return options;
     }
 
     public String pickEmptyCells()
