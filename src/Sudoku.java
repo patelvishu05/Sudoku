@@ -12,7 +12,7 @@ public class Sudoku
     Sudoku()
     {
         table = new int[9][9];
-        emptyCells= new ArrayList<String>();
+        //emptyCells= new ArrayList<String>();
         gridBoxes = new ArrayList<ArrayList<Integer>>();
         this.parseFile();
         this.fillGridBoxes();
@@ -20,6 +20,7 @@ public class Sudoku
 
     public void fillGridBoxes()
     {
+        emptyCells= new ArrayList<String>();
         ArrayList<Integer> box= new ArrayList<>();
         for(int i=0; i < 3; i++)
             for(int j=0; j < 3; j++)

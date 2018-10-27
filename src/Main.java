@@ -7,10 +7,12 @@ public class Main
 {
     public static void main(String[] args) {
         Sudoku sudoku = new Sudoku();
+        int iter=0;
 
-        //for (int y = 0; y < 20; y++) {
+        //for (int y = 0; y < 2; y++)
         while(sudoku.emptyCells.size()!=0)
         {
+            iter++;
             ArrayList<Integer> options = new ArrayList<Integer>();
             HashMap<Integer, Integer> hmap = new HashMap<Integer, Integer>();
 
@@ -25,15 +27,14 @@ public class Main
             System.out.println("Empty Cells: (Box)(Row)(Col) " + emptyBox);
             ArrayList<Integer> possibleAnswers = sudoku.checkPlace(row, col, options);
 
-            System.out.println("Possible Answers: ");
-            for (int i : possibleAnswers) System.out.print(i);
-            System.out.println("");
+            System.out.println("Possible Answers: "); for (int i : possibleAnswers) System.out.print(i); System.out.println("");
 
             if (possibleAnswers.size() == 1)
             {
                 sudoku.insertValues(possibleAnswers.get(0), row, col);
                 sudoku.printGrid();
             }
+            if(possibleAnswers.size() ==0) break;
             else
             {
                 for (int h = 0; h < possibleAnswers.size(); h++) hmap.put(possibleAnswers.get(h), 1);
@@ -49,24 +50,21 @@ public class Main
                         int c = Character.getNumericValue(sudoku.emptyCells.get(i).charAt(2));
 
                         ArrayList<Integer> otherCellAnswers = sudoku.checkPlace(r, c, oneToNine);
+                        System.out.print("Possible Answers: "); for (int in : otherCellAnswers) System.out.print(in); System.out.println("");
 
-                        //System.out.print("Possible Answers: " + r + c + "\t");
-//                        for (int j : otherCellAnswers)
-//                        {
-//                            for (int keys : hmap.keySet())
-//                            {
-//                                if (j == keys) {
-//                                    int val = hmap.get(keys) + 1;
-//                                    hmap.put(j, val);
-//                                }
-//                            }
-//                            System.out.print(j);
-//                        }
-//                        System.out.println("");
+                        if (otherCellAnswers.size() == 1)
+                        {
+                            sudoku.insertValues(otherCellAnswers.get(0), r, c);
+                            sudoku.printGrid();
+                        }
+
+
                     }
                 }
-                //for (int key : hmap.keySet()) System.out.println(key + "\t" + hmap.get(key));
             }
-        }
-    }
-}
+
+            System.out.println("---->"+sudoku.emptyCells.size() + "\titeration:" + iter);
+
+        }   //end of while loop
+    }   //end of main method
+}   //end of Main Class
