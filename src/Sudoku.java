@@ -5,9 +5,9 @@ import java.util.*;
 //(i: Row(ACROSS), j: Col(DOWN))
 public class Sudoku
 {
-    private static int[][] table;
-    private static ArrayList<String> emptyCells;
-    private static ArrayList<ArrayList<Integer>> gridBoxes;
+    public static int[][] table;
+    public static ArrayList<String> emptyCells;
+    public static ArrayList<ArrayList<Integer>> gridBoxes;
 
     Sudoku()
     {
@@ -23,55 +23,91 @@ public class Sudoku
         ArrayList<Integer> box= new ArrayList<>();
         for(int i=0; i < 3; i++)
             for(int j=0; j < 3; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("0"+i+j);
+            }
         gridBoxes.add(box);
 
         box = new ArrayList<>();
         for(int i=0; i < 3; i++)
             for(int j=3; j < 6; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("1"+i+j);
+            }
         gridBoxes.add(box);
 
         box = new ArrayList<>();
         for(int i=0; i < 3; i++)
             for(int j=6; j < 9; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("2"+i+j);
+            }
         gridBoxes.add(box);
 
         box= new ArrayList<>();
         for(int i=3; i < 6; i++)
             for(int j=0; j < 3; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("3"+i+j);
+            }
         gridBoxes.add(box);
 
         box = new ArrayList<>();
         for(int i=3; i < 6; i++)
             for(int j=3; j < 6; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("4"+i+j);
+            }
         gridBoxes.add(box);
 
         box = new ArrayList<>();
         for(int i=3; i < 6; i++)
             for(int j=6; j < 9; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("5"+i+j);
+            }
         gridBoxes.add(box);
 
         box= new ArrayList<>();
         for(int i=6; i < 9; i++)
             for(int j=0; j < 3; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("6"+i+j);
+            }
         gridBoxes.add(box);
 
         box = new ArrayList<>();
         for(int i=6; i < 9; i++)
             for(int j=3; j < 6; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("7"+i+j);
+            }
         gridBoxes.add(box);
 
         box = new ArrayList<>();
         for(int i=6; i < 9; i++)
             for(int j=6; j < 9; j++)
+            {
                 box.add(table[i][j]);
+                if(table[i][j]==0)
+                    emptyCells.add("8"+i+j);
+            }
         gridBoxes.add(box);
 
     }
@@ -89,19 +125,11 @@ public class Sudoku
         else                                     return 8;
     }
 
-    public ArrayList<Integer> checkPlace()
+    public ArrayList<Integer> checkPlace(int row, int col,ArrayList<Integer> options)
     {
-        String emptyBox = pickEmptyCells();
-        int row = 0;//Character.getNumericValue(emptyBox.charAt(0));
-        int col = 5;//Character.getNumericValue(emptyBox.charAt(1));
         int box = findBoxNumber(row,col);
-        ArrayList<Integer> options = new ArrayList<Integer>();
 
-        System.out.println("Empty Cells: " + emptyBox);
-        System.out.println("Box Grid number: "+box);
-
-        for(int i=1; i <= 9; i++)
-            options.add(i);
+        //System.out.println("Box Grid number: "+box);
 
         for(int i=0; i < 9 ; i++)
         {
@@ -124,6 +152,13 @@ public class Sudoku
         return options;
     }
 
+    public void insertValues(int value, int r, int c)
+    {
+        table[r][c]=value;
+        emptyCells.remove(""+findBoxNumber(r,c)+r+c);
+        fillGridBoxes();
+    }
+
     public String pickEmptyCells()
     {
         Collections.shuffle(emptyCells);
@@ -143,8 +178,8 @@ public class Sudoku
                 for(int j = 0; j < 9; j++ )
                 {
                     table[i][j]=Character.getNumericValue(tokens[j]);
-                    if(table[i][j] == 0)
-                        emptyCells.add(""+i+j);
+                    //if(table[i][j] == 0)
+                    //    emptyCells.add(""+i+j);
                 }
                 i++;
             }
