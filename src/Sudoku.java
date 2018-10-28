@@ -1,3 +1,5 @@
+import com.sun.org.apache.xpath.internal.operations.Mult;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -12,7 +14,6 @@ public class Sudoku
     Sudoku()
     {
         table = new int[9][9];
-        //emptyCells= new ArrayList<String>();
         gridBoxes = new ArrayList<ArrayList<Integer>>();
         this.parseFile();
         this.fillGridBoxes();
@@ -20,6 +21,7 @@ public class Sudoku
 
     public void fillGridBoxes()
     {
+        gridBoxes = new ArrayList<ArrayList<Integer>>();
         emptyCells= new ArrayList<String>();
         ArrayList<Integer> box= new ArrayList<>();
         for(int i=0; i < 3; i++)
@@ -130,7 +132,12 @@ public class Sudoku
     {
         int box = findBoxNumber(row,col);
 
-        //System.out.println("Box Grid number: "+box);
+        for(int i=0; i < 9; i++)
+        {
+            if(gridBoxes.get(box).get(i) != 0)
+                if(options.contains(gridBoxes.get(box).get(i)))
+                    options.remove(options.indexOf(gridBoxes.get(box).get(i)));
+        }
 
         for(int i=0; i < 9 ; i++)
         {
@@ -142,28 +149,39 @@ public class Sudoku
                 if(options.contains(table[row][i]))
                     options.remove(options.indexOf(table[row][i]));
         }
-
-        for(int i=0; i < 9; i++)
-        {
-            if(gridBoxes.get(box).get(i) != 0)
-                if(options.contains(gridBoxes.get(box).get(i)))
-                    options.remove(options.indexOf(gridBoxes.get(box).get(i)));
-        }
-
         return options;
     }
 
     public void insertValues(int value, int r, int c)
     {
         table[r][c]=value;
-        emptyCells.remove(""+findBoxNumber(r,c)+r+c);
         fillGridBoxes();
     }
 
     public String pickEmptyCells()
     {
         Collections.shuffle(emptyCells);
+
         return emptyCells.get(emptyCells.size()-1);
+    }
+
+    public MultipleReturn getAnswer(String emptyBox)
+    {
+        MultipleReturn multipleReturn = new MultipleReturn();
+        ArrayList<Integer> oneToNine = new ArrayList<Integer>();
+        for (int i = 1; i <= 9; i++) oneToNine.add(i);
+
+        int row = Character.getNumericValue(emptyBox.charAt(1));
+        int col = Character.getNumericValue(emptyBox.charAt(2));
+        //System.out.println("Empty Cells: (Box)(Row)(Col) " + emptyBox);
+
+        ArrayList<Integer> possibleAnswers = checkPlace(row, col, oneToNine);
+        //System.out.print("Possible Answers: "); for (int i : possibleAnswers) System.out.print(i); System.out.println();
+
+        multipleReturn.possibleAnswers = possibleAnswers;
+        multipleReturn.row = row;
+        multipleReturn.col = col;
+        return multipleReturn;
     }
 
     public void parseFile()
@@ -171,7 +189,7 @@ public class Sudoku
         Scanner scan = null;
         try
         {
-            scan = new Scanner(new File("./grid1.txt"));
+            scan = new Scanner(new File("./grid3.txt"));
             int i = 0;
             while(scan.hasNextLine())
             {
@@ -179,8 +197,6 @@ public class Sudoku
                 for(int j = 0; j < 9; j++ )
                 {
                     table[i][j]=Character.getNumericValue(tokens[j]);
-                    //if(table[i][j] == 0)
-                    //    emptyCells.add(""+i+j);
                 }
                 i++;
             }
@@ -199,7 +215,7 @@ public class Sudoku
 
     public void printGrid()
     {
-        System.out.println("    0   1   2   3   4   5   6   7   8  ");
+        System.out.println("\n\n    0   1   2   3   4   5   6   7   8  ");
         for(int i=0; i < 9; i++)
         {
             System.out.println("  +---+---+---+---+---+---+---+---+---+");
