@@ -2,6 +2,7 @@ import com.sun.org.apache.xpath.internal.operations.Mult;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 //(i: Row(ACROSS), j: Col(DOWN))
@@ -11,11 +12,11 @@ public class Sudoku
     public static ArrayList<String> emptyCells;
     public static ArrayList<ArrayList<Integer>> gridBoxes;
 
-    Sudoku()
+    Sudoku(String fileName)
     {
         table = new int[9][9];
         gridBoxes = new ArrayList<ArrayList<Integer>>();
-        this.parseFile();
+        this.parseFile(fileName);
         this.fillGridBoxes();
     }
 
@@ -184,12 +185,12 @@ public class Sudoku
         return multipleReturn;
     }
 
-    public void parseFile()
+    public void parseFile(String fileName)
     {
         Scanner scan = null;
         try
         {
-            scan = new Scanner(new File("./grid3.txt"));
+            scan = new Scanner(new File(fileName));
             int i = 0;
             while(scan.hasNextLine())
             {
@@ -215,7 +216,7 @@ public class Sudoku
 
     public void printGrid()
     {
-        System.out.println("\n\n    0   1   2   3   4   5   6   7   8  ");
+        System.out.println("    0   1   2   3   4   5   6   7   8  ");
         for(int i=0; i < 9; i++)
         {
             System.out.println("  +---+---+---+---+---+---+---+---+---+");
@@ -229,7 +230,7 @@ public class Sudoku
             }
             System.out.print(" |\n");
         }
-        System.out.println("  +---+---+---+---+---+---+---+---+---+");
+        System.out.println("  +---+---+---+---+---+---+---+---+---+\n\n");
     }
 
 }   //end class Sudoku
