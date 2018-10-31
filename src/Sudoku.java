@@ -1,17 +1,22 @@
-import com.sun.org.apache.xpath.internal.operations.Mult;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
-//(i: Row(ACROSS), j: Col(DOWN))
+/**
+ * Sudoku class has various methods that helps in sudoku solving.
+ *(i: Row(ACROSS), j: Col(DOWN))
+ *
+ * @author  Vishalkumar Patel
+ */
 public class Sudoku
 {
+    //Class variables
     public static int[][] table;
     public static ArrayList<String> emptyCells;
     public static ArrayList<ArrayList<Integer>> gridBoxes;
 
+    //Constructor which upon initializing class object will automatically set
+    //defaults and send the received input file for parsing
     Sudoku(String fileName)
     {
         table = new int[9][9];
@@ -20,6 +25,9 @@ public class Sudoku
         this.fillGridBoxes();
     }
 
+    //fillGridBoxes() method helps in putting cells in the box that a
+    //particular cell may be in. It can also helps maintain
+    //a list of all STILL empty cells
     public void fillGridBoxes()
     {
         gridBoxes = new ArrayList<ArrayList<Integer>>();
@@ -116,6 +124,8 @@ public class Sudoku
 
     }
 
+    //findBoxNumber() when sent its location will tell us
+    //which box the cell will belong in
     public int findBoxNumber(int i, int j)
     {
         if( i>=0  && i < 3 && j>=0 && j < 3)     return 0;
@@ -129,6 +139,12 @@ public class Sudoku
         else                                     return 8;
     }
 
+    //checkPlace() is the function which receives location of empty cell.
+    //It also receives an arraylist of numbers with 1 to 9 in them.
+    //The below function will check values that cannot be placed in empty cell
+    //and remove them from the arraylist until just 1 value if left.
+    //If we have more than 1 value for a particular cell, we skip that cell, doing nothing
+    //WE are not guessing or searching here.
     public ArrayList<Integer> checkPlace(int row, int col,ArrayList<Integer> options)
     {
         int box = findBoxNumber(row,col);
@@ -150,6 +166,7 @@ public class Sudoku
                 if(options.contains(table[row][i]))
                     options.remove(options.indexOf(table[row][i]));
         }
+
         return options;
     }
 
@@ -159,13 +176,17 @@ public class Sudoku
         fillGridBoxes();
     }
 
+    //pickEmptyCells() help us pick a random emptycell location from the table.
+    //This is exactly how humans do it..
+    //N.B.: Humans do not do it sequentially
     public String pickEmptyCells()
     {
         Collections.shuffle(emptyCells);
-
         return emptyCells.get(emptyCells.size()-1);
     }
 
+    //getAnswers() functions helps wrap return values into an object and send
+    //it to the callee.
     public MultipleReturn getAnswer(String emptyBox)
     {
         MultipleReturn multipleReturn = new MultipleReturn();
@@ -174,10 +195,8 @@ public class Sudoku
 
         int row = Character.getNumericValue(emptyBox.charAt(1));
         int col = Character.getNumericValue(emptyBox.charAt(2));
-        //System.out.println("Empty Cells: (Box)(Row)(Col) " + emptyBox);
 
         ArrayList<Integer> possibleAnswers = checkPlace(row, col, oneToNine);
-        //System.out.print("Possible Answers: "); for (int i : possibleAnswers) System.out.print(i); System.out.println();
 
         multipleReturn.possibleAnswers = possibleAnswers;
         multipleReturn.row = row;
@@ -185,6 +204,8 @@ public class Sudoku
         return multipleReturn;
     }
 
+    //parseFile() helps in parsing the file that was sent
+    //to it. Parses into object and catch any exceptions if occurs
     public void parseFile(String fileName)
     {
         Scanner scan = null;
@@ -214,9 +235,11 @@ public class Sudoku
         }
     }   //end method parseFile
 
+    //printGrid() function helps in printing grid and the values contained in
+    //them visually appealing way.
     public void printGrid()
     {
-        System.out.println("    0   1   2   3   4   5   6   7   8  ");
+        System.out.println("\n    0   1   2   3   4   5   6   7   8  ");
         for(int i=0; i < 9; i++)
         {
             System.out.println("  +---+---+---+---+---+---+---+---+---+");
@@ -231,6 +254,6 @@ public class Sudoku
             System.out.print(" |\n");
         }
         System.out.println("  +---+---+---+---+---+---+---+---+---+\n\n");
-    }
+    }   //end method printGrid()
 
 }   //end class Sudoku

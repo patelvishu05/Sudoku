@@ -1,94 +1,118 @@
-import java.lang.reflect.Array;
-import java.net.Inet4Address;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Stack;
 
+/**
+ * Purpose: To create a sudoku solver that solves the sudoku
+ * puzzles, using strategy and not search or brute force.
+ * To depict human like solving of Sudoku.
+ *
+ * The sudokuSolver method helps initializes a Sudoku and sends the input sudoku file
+ * for parsing to the Sudoku class to make it a playable sudoku.
+ *
+ * @author  Vishalkumar Patel
+ * Course:  Artificial Intelligence
+ * HW:      5
+ */
 public class Main
 {
 
-    public static void sudokuSolver()
+    public static void sudokuSolver(String fileName, String outputFile)
     {
-        Sudoku s = new Sudoku("./grid1.txt");
-        int loopCounter = 1;
+        //To send the output to specified output files instead of the Console
+        PrintStream out = null;
 
-        while (s.emptyCells.size() != 0)
+        try
         {
-            MultipleReturn m1 = new MultipleReturn();
-            ArrayList<ArrayList<Integer>> answerList = new ArrayList<ArrayList<Integer>>();
-            ArrayList<Integer> elims = new ArrayList<Integer>();
-            String emptyBox = s.pickEmptyCells();
-            m1 = s.getAnswer(emptyBox);
-            //s.printGrid();
-            //System.out.print("Empty Cells: Row["+m1.row + "]  Col[" + m1.col + "]");
-            //System.out.print("\tPossible Answers: ");
-            for (int i : m1.possibleAnswers)
+            out = new PrintStream(new FileOutputStream(outputFile));
+            System.setOut(out);
+
+            Sudoku s = new Sudoku(fileName);
+            int loopCounter = 1;
+
+            while (s.emptyCells.size() != 0)
             {
-            //   System.out.print(i);
-                elims.add(i);
-            }
-            //System.out.println();
+                MultipleReturn m1 = new MultipleReturn();   //to support multiple return values
+                ArrayList<ArrayList<Integer>> answerList = new ArrayList<ArrayList<Integer>>();
+                ArrayList<Integer> eliminate = new ArrayList<Integer>();
+                String emptyBox = s.pickEmptyCells();
+                m1 = s.getAnswer(emptyBox);
 
-            if (m1.possibleAnswers.size() == 1)
-            {
-                System.out.println("1--->>>>>>>>>>>>>>>>>>>"+m1.possibleAnswers.get(0)+m1.row+m1.col);
-                s.insertValues(m1.possibleAnswers.get(0), m1.row, m1.col);
-                s.printGrid();
-            }
+                for (int i : m1.possibleAnswers)
+                    eliminate.add(i);
 
-            if(m1.possibleAnswers.size()>1)
-            {
-
-                MultipleReturn m2 = new MultipleReturn();
-
-                for (int i = 0; i < s.emptyCells.size() - 1; i++)
+                if (m1.possibleAnswers.size() == 1)
                 {
-                    if (emptyBox.charAt(0) == s.emptyCells.get(i).charAt(0) )
+                    s.insertValues(m1.possibleAnswers.get(0), m1.row, m1.col);
+                    s.printGrid();
+                    System.out.println("The best possible value for the below cell after\n" +
+                            "eliminating the not possible ones is as follows: ");
+                    System.out.println("Row [" + m1.row +"] Col [" +m1.col + "] = "+ m1.possibleAnswers.get(0));
+                }
+
+                if(m1.possibleAnswers.size()>1)
+                {
+
+                    MultipleReturn m2 = new MultipleReturn();
+
+                    for (int i = 0; i < s.emptyCells.size() - 1; i++)
                     {
-                        m2 = s.getAnswer(s.emptyCells.get(i));
-                        //System.out.print("--->Possible Answers: " + m2.row + m2.col+"\t");
-                        for (int q : m2.possibleAnswers)
+                        if (emptyBox.charAt(0) == s.emptyCells.get(i).charAt(0) )
                         {
-                            if(m1.possibleAnswers.contains(q))
-                            {
-                                //System.out.print(q);
-                            }
-
-                            if(elims.contains(q))
-                            {
-                                elims.remove(elims.indexOf(q));
-                            }
+                            m2 = s.getAnswer(s.emptyCells.get(i));
+                            for (int q : m2.possibleAnswers)
+                                if(eliminate.contains(q))
+                                    eliminate.remove(eliminate.indexOf(q));
                         }
-
-                        //System.out.println();
                     }
+                    if (eliminate.size() == 1)
+                    {
+                        s.insertValues(eliminate.get(0), m1.row, m1.col);
+                        s.printGrid();
+                        System.out.println("The best possible value for the below cell after\n" +
+                                "eliminating the not possible ones is as follows: ");
+                        System.out.println("Row [" + m1.row +"] Col [" +m1.col + "] = "+ eliminate.get(0));
+                    }
+                }
 
-                }   //end of for loop
 
-            }
 
-            //System.out.println("Loop Counter: " + loopCounter);
-            //loopCounter++;
+            }   //end of while loop
+            System.out.println("\n\nCongratulations !! The puzzle is Solved");
+            out.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if(out!=null)
+                out = null;
+        }
 
-            if (elims.size() == 1)
-            {
-                System.out.println("2--->>>>>>>>>>>>>>>>>>>"+elims.get(0)+m1.row+m1.col);
-                s.insertValues(elims.get(0), m1.row, m1.col);
-                s.printGrid();
-            }
 
-            //System.out.println(s.emptyCells.size());
-        }   //end of while loop
-
-        s.printGrid();
     }   //end method sudokuSolver
 
 
 
+    //Main driver method that drives the program
     public static void main(String[] args)
     {
-        sudokuSolver();
+        sudokuSolver("./src/input/Grid1.txt","./src/output/output1.txt");
+        sudokuSolver("./src/input/Grid2.txt","./src/output/output2.txt");
+        sudokuSolver("./src/input/Grid3.txt","./src/output/output3.txt");
+        sudokuSolver("./src/input/Grid4.txt","./src/output/output4.txt");
+        sudokuSolver("./src/input/Grid5.txt","./src/output/output5.txt");
+        sudokuSolver("./src/input/Grid6.txt","./src/output/output6.txt");
+        sudokuSolver("./src/input/Grid7.txt","./src/output/output7.txt");
+        sudokuSolver("./src/input/Grid8.txt","./src/output/output8.txt");
+        sudokuSolver("./src/input/Grid9.txt","./src/output/output9.txt");
+        sudokuSolver("./src/input/Grid10.txt","./src/output/output10.txt");
+
     }
+
 }
 
 
